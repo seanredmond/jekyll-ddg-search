@@ -9,7 +9,7 @@ module Jekyll
       @text = text
       @search_url = 'http://duckduckgo.com/search.html'
       # options that control output
-      @tag_options = ['frameborder']
+      @tag_options = ['frameborder', 'buttontext']
       # see https://duckduckgo.com/search_box
       @simple_options = ['width', 'duck', 'site', 'prefill', 'bgcolor', 'focus']
       # see https://duckduckgo.com/params
@@ -23,6 +23,8 @@ module Jekyll
       @options = get_options(text)
       @frameborder = 
         escape_options('frameborder', @options.delete('frameborder'))
+      # @buttontext = 
+      #   escape_options('buttontext', @options.delete('buttontext'))
     end
  
     # Parse options from text string key:var pairs
@@ -76,7 +78,7 @@ module Jekyll
       end
 
       value = CGI::escape(value)
-      if key == 'prefill'
+      if ['prefill', 'buttontext'].include?('prefill')
         value.gsub!('%2B', ' ')
       end
 
@@ -112,13 +114,21 @@ module Jekyll
       return %Q|<input type="text" name="q" maxlength="255"#{placeholder}/>|
     end
 
+    def search_button(opts)
+      if opts['buttontext'] != nil
+        return escape_options('buttontext', opts['buttontext'])
+      end
+      return 'Search'
+    end
+
     def render_form(context)
       inputs = 
 <<HTML
 <form method="get" id="search" action="http://duckduckgo.com/">
   #{hidden_inputs(@options)}
   #{search_input(@options)}
-  <input type="submit" value="Search"/>
+  <input type="submit" value="#{search_button(@options)}" />
+  
 </form>
 HTML
     end
