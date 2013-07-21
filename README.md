@@ -15,7 +15,7 @@ Options are passed in `key:value` pairs added to the tag, e.g.:
 
     {% ddg_search site:example.com prefill:Search+example.com}
 
-This will create a search box in an iframe that searches example.com, with the prompt text “Search+example.com” in the input box.
+This will create a search box in an iframe that searches example.com, with the prompt text “Search example.com” in the input box.
 
     {% ddg_search_form site:example.com prefill:Search+example.com buttontext:Search+for+examples}
 
