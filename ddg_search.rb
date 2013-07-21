@@ -2,6 +2,8 @@ require "cgi"
 
 module Jekyll
   class DdgSearchTag < Liquid::Tag
+    safe = true
+    priority = :low
  
     def initialize(tag_name, text, tokens)
       super
