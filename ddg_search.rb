@@ -8,7 +8,16 @@ module Jekyll
       @tag = tag_name
       @text = text
       @search_url = 'http://duckduckgo.com/search.html'
-      @valid_options = ['width', 'duck', 'site', 'sites', 'prefill', 'bgcolor', 'focus']
+      # see https://duckduckgo.com/search_box
+      @simple_options = ['width', 'duck', 'site', 'prefill', 'bgcolor', 'focus']
+      # see https://duckduckgo.com/params
+      @advanced_options = [
+        'kp', 'kl', 'ki', 'kz', 'kc', 'kn', 'kf', 'kb', 'kd', 'kg', 'kh', 'kj',
+        'ky', 'kx', 'k7', 'k8', 'k9', 'kaa', 'kab', 'ks', 'kw', 'km', 'ka', 
+        'ku', 'kt', 'k2', 'ko', 'k3', 'kk', 'ke', 'kr', 'kq', 'k1', 'kv', 'k4', 
+        't', 'sites'
+      ]
+      @valid_options = @simple_options + @advanced_options
       @options = get_options(text)
     end
  
@@ -79,19 +88,28 @@ module Jekyll
 HTML
     end
 
-    def form_inputs(opts)
-      opts.map{|k, v| 
+    def hidden_inputs(opts)
+      opts.reject{|k, v| !@advanced_options.include?(k)}.map{|k, v| 
         %Q|<input type="hidden" name="#{k}" value="#{v}"/>|
       }.join(' ')
     end
 
+    def search_input(opts)
+      placeholder = ''
+      if opts.has_key?('prefill')
+        placeholder = 
+          %Q| placeholder="#{escape_options('prefill',opts['prefill'])}"|
+      end
+      return %Q|<input type="text" name="q" maxlength="255"#{placeholder}/>|
+    end
+
     def render_form(context)
-      inputs = form_inputs(@options)
+      inputs = 
 <<HTML
 <form method="get" id="search" action="http://duckduckgo.com/">
-  #{inputs}
-  <input type="text" name="q" maxlength="255" placeholder="Search"/>
-  <input type="submit" value="DuckDuckGo Search" style="visibility: hidden;" />
+  #{hidden_inputs(@options)}
+  #{search_input(@options)}
+  <input type="submit" value="Search"/>
 </form>
 HTML
     end
