@@ -8,6 +8,8 @@ module Jekyll
       @tag = tag_name
       @text = text
       @search_url = 'http://duckduckgo.com/search.html'
+      # options that control output
+      @tag_options = ['frameborder']
       # see https://duckduckgo.com/search_box
       @simple_options = ['width', 'duck', 'site', 'prefill', 'bgcolor', 'focus']
       # see https://duckduckgo.com/params
@@ -17,8 +19,10 @@ module Jekyll
         'ku', 'kt', 'k2', 'ko', 'k3', 'kk', 'ke', 'kr', 'kq', 'k1', 'kv', 'k4', 
         't', 'sites'
       ]
-      @valid_options = @simple_options + @advanced_options
+      @valid_options = @simple_options + @advanced_options + @tag_options
       @options = get_options(text)
+      @frameborder = 
+        escape_options('frameborder', @options.delete('frameborder'))
     end
  
     # Parse options from text string key:var pairs
@@ -67,6 +71,10 @@ module Jekyll
     # It would be better if DuckDuckGo handled escaped spaces better in their
     # form generation.
     def escape_options(key, value)
+      if value == nil
+        return value
+      end
+
       value = CGI::escape(value)
       if key == 'prefill'
         value.gsub!('%2B', ' ')
@@ -81,11 +89,12 @@ module Jekyll
 
     def render_iframe(context)
       url = [@search_url, options_query(@options)].join('?')
-<<HTML
-<iframe src="#{url}" 
-        frameborder="0"></iframe>
-</iframe>
-HTML
+      border = ''
+      if @frameborder != nil
+        border = %Q| frameborder="#{@frameborder}"|
+      end
+
+      return %Q|<iframe src="#{url}"#{border}></iframe>|
     end
 
     def hidden_inputs(opts)
