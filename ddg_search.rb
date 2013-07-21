@@ -25,8 +25,6 @@ module Jekyll
       @options = get_options(text)
       @frameborder = 
         escape_options('frameborder', @options.delete('frameborder'))
-      # @buttontext = 
-      #   escape_options('buttontext', @options.delete('buttontext'))
     end
  
     # Parse options from text string key:var pairs
