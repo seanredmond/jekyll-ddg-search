@@ -48,7 +48,7 @@ All styling must be done by CSS. No classes or ids are added to the output, so t
         {% ddg_search_form site:example.com prefill:Search+example.com}
     </div>
 
-You can then use the selectors `.mysearch iframe` and `mysearch form` in your site‘s CSS.
+You can then use the selectors `.mysearch iframe` and `.mysearch form` in your site‘s CSS.
 
 ## Frameborder
 
