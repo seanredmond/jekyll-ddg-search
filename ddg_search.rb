@@ -1,3 +1,5 @@
+require "cgi"
+
 module Jekyll
   class DdgSearchTag < Liquid::Tag
  
@@ -23,9 +25,27 @@ module Jekyll
     #
     # Options with invalid keys or nil values are removed
     def get_options(opt_string)
-      return Hash[opt_string.split(/\s+/).map{|opt| opt.split(':')}].
+      parsed_opts = Hash[opt_string.split(/\s+/).map{|opt| opt.split(':')}].
         delete_if{|k, v| (!@valid_options.include?(k)) || (v == nil) }.
-        map{|k,v| "#{k}=#{v.gsub('+', ' ')}"}.join('&amp;')
+        map{|k,v| "#{k}=#{escape_options(k, v)}"}.join('&amp;')
+    end
+
+    # Escape query parameters, with special handling for prefill option
+    #
+    # Since prefill is a prompt phrase, it will probably require spaces. In the
+    # tag, spaces need to be entered as '+' so the tag options can be split
+    # correctly. Pluses are then escaped as '%2B' which are finally converted
+    # back to spaces.
+    #
+    # It would be better if DuckDuckGo handled escaped spaces better in their
+    # form generation.
+    def escape_options(key, value)
+      value = CGI::escape(value)
+      if key == 'prefill'
+        value.gsub!('%2B', ' ')
+      end
+
+      return value
     end
 
     def render(context)
