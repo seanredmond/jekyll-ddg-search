@@ -59,4 +59,4 @@ HTML
   end
 end
  
-Liquid::Template.register_tag('ddgsearch', Jekyll::DdgSearchTag)
+Liquid::Template.register_tag('ddg_search', Jekyll::DdgSearchTag)
