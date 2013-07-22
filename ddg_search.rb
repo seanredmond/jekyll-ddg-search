@@ -27,18 +27,8 @@ module Jekyll
         escape_options('frameborder', @options.delete('frameborder'))
     end
  
-    # Parse options from text string key:var pairs
-    #
-    # Valid options:
-    #   width: Width of search box (not iframe!) in px
-    #   duck: Show Duck Duck Go logo? Use 'yes', but any value turns the logo on
-    #   site: Site to search
-    #   prefill: Prompt text to include in search box. Use '+' for spaces
-    #   bgcolor: Hex-encoded color value for search form background
-    #   focus: Give search input focus when page is loaded? Use 'yes' bu any 
-    #          value turns this option on
-    #
-    # Options with invalid keys or nil values are removed
+    # Parse options from text string key:var pairs. Options with invalid keys 
+    # or nil values are removed
     def get_options(opt_string)
       parsed_opts = fixup_options(
         Hash[opt_string.split(/\s+/).map{|opt| opt.split(':')}].
@@ -46,6 +36,7 @@ module Jekyll
       )
     end
 
+    # Handle options that need some special treatment
     def fixup_options(opts)
       # The iframe version uses the 'site' parameter, while the form version
       # uses 'sites'. Conver one to the other where necessary
@@ -85,10 +76,12 @@ module Jekyll
       return value
     end
 
+    # Convert options to URL params
     def options_query(opts)
       opts.map{|k,v| "#{k}=#{escape_options(k, v)}"}.join('&amp;')
     end
 
+    # Output iframe version of search box
     def render_iframe(context)
       url = [@search_url, options_query(@options)].join('?')
       border = ''
@@ -99,12 +92,14 @@ module Jekyll
       return %Q|<iframe src="#{url}"#{border}></iframe>|
     end
 
+    # Generate hidden form inputs
     def hidden_inputs(opts)
       opts.reject{|k, v| !@advanced_options.include?(k)}.map{|k, v| 
         %Q|<input type="hidden" name="#{k}" value="#{v}"/>|
       }.join(' ')
     end
 
+    # Generate search box form form version
     def search_input(opts)
       placeholder = ''
       if opts.has_key?('prefill')
@@ -114,6 +109,7 @@ module Jekyll
       return %Q|<input type="text" name="q" maxlength="255"#{placeholder}/>|
     end
 
+    # Generate text for submit button
     def search_button(opts)
       if opts['buttontext'] != nil
         return escape_options('buttontext', opts['buttontext'])
@@ -121,6 +117,7 @@ module Jekyll
       return 'Search'
     end
 
+    # Generate form version of search box
     def render_form(context)
       inputs = 
 <<HTML
