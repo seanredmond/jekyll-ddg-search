@@ -1,4 +1,4 @@
-# DuckDuckGo Embed Search for Jekyll
+# DuckDuckGo Embeded Search for Jekyll
 
 Add DuckDuckGo search to your Jekyll site. 
 
